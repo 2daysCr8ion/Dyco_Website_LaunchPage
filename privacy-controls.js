@@ -10,8 +10,9 @@
   function read() { try { return localStorage.getItem(key); } catch { return null; } }
   function save(v) { try { localStorage.setItem(key, v); return read() === v; } catch { return false; } }
   let loaded = false;
+  const privatePage = /^\/(contact|privacy)(?:\.html)?\/?$/i.test(location.pathname);
   function load() {
-    if (loaded || signal() || read() !== 'allow' || /\/(contact|privacy)\.html$/.test(location.pathname)) return;
+    if (loaded || signal() || read() !== 'allow' || privatePage) return;
     loaded = true;
     (window._linkedin_data_partner_ids ||= []).push(window._linkedin_partner_id = '10324612');
     if (!window.lintrk) { window.lintrk = (...args) => window.lintrk.q.push(args); window.lintrk.q = []; }
@@ -52,6 +53,6 @@
   reject.onclick = () => choose('deny');
   allow.onclick = () => { if (!signal()) choose('allow'); };
   if (signal() || location.hash === '#opt-out') choose('deny', true);
-  else { panel.hidden = ['allow','deny'].includes(read()) || location.pathname.endsWith('/privacy.html'); load(); }
+  else { panel.hidden = ['allow','deny'].includes(read()) || /^\/privacy(?:\.html)?\/?$/i.test(location.pathname); load(); }
   update();
 })();
